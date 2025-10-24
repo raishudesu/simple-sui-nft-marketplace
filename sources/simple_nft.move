@@ -23,8 +23,8 @@ module nft::sui_nft_marketplace {
     /// A listing resource that holds an NFT for sale
     public struct Listing has key {
         id: UID,
-        /// The NFT being sold
-        nft_id: ID,
+        /// The NFT being sold (stored directly in the listing)
+        nft: PopChainNFT,
         /// Price in MIST (1 SUI = 1,000,000,000 MIST)
         price: u64,
         /// The seller's address
@@ -137,7 +137,7 @@ module nft::sui_nft_marketplace {
         
         let listing = Listing {
             id: object::new(ctx),
-            nft_id,
+            nft,
             price,
             seller,
         };
@@ -150,9 +150,6 @@ module nft::sui_nft_marketplace {
             seller,
             price,
         });
-        
-        // Transfer NFT to the listing object
-        transfer::public_transfer(nft, object::id_to_address(&listing_id));
         
         // Share the listing so anyone can purchase it
         transfer::share_object(listing);
@@ -168,10 +165,12 @@ module nft::sui_nft_marketplace {
 
          let Listing {
             id: listing_id,
-            nft_id,
+            nft,
             price,
             seller,
         } = listing;
+        
+        let nft_id = object::id(&nft);
 
         let buyer = tx_context::sender(ctx);
 
@@ -210,28 +209,36 @@ module nft::sui_nft_marketplace {
             price,
         });
         
+        // Transfer NFT to buyer
+        transfer::public_transfer(nft, buyer);
+        
         object::delete(listing_id);
     }
 
     /// Delist an NFT (entry function)
     entry fun cancel_listing(
         listing: Listing,
-        ctx: &TxContext
+        ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
         assert!(sender == listing.seller, ENotSeller);
         
         let Listing {
             id: listing_id,
-            nft_id,
+            nft,
             price: _,
-            seller: _,
+            seller,
         } = listing;
+        
+        let nft_id = object::id(&nft);
         
         sui::event::emit(DelistNFTEvent {
             listing_id: object::uid_to_inner(&listing_id),
             nft_id,
         });
+        
+        // Return NFT to seller
+        transfer::public_transfer(nft, seller);
 
         object::delete(listing_id);
     }
@@ -280,7 +287,7 @@ module nft::sui_nft_marketplace {
         
         let listing = Listing {
             id: object::new(ctx),
-            nft_id,
+            nft,
             price,
             seller,
         };
@@ -294,29 +301,33 @@ module nft::sui_nft_marketplace {
             price,
         });
         
-        transfer::public_transfer(nft, object::id_to_address(&listing_id));
         transfer::share_object(listing);
     }
 
     /// Delist an NFT
     public fun delist_nft(
         listing: Listing,
-        ctx: &TxContext
+        ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
         assert!(sender == listing.seller, ENotSeller);
         
         let Listing {
             id: listing_id,
-            nft_id,
+            nft,
             price: _,
-            seller: _,
+            seller,
         } = listing;
+        
+        let nft_id = object::id(&nft);
         
         sui::event::emit(DelistNFTEvent {
             listing_id: object::uid_to_inner(&listing_id),
             nft_id,
         });
+        
+        // Return NFT to seller
+        transfer::public_transfer(nft, seller);
         
         object::delete(listing_id);
     }
@@ -355,7 +366,7 @@ module nft::sui_nft_marketplace {
 
     /// Get listing NFT ID
     public fun listing_nft_id(listing: &Listing): ID {
-        listing.nft_id
+        object::id(&listing.nft)
     }
 
     /// Get listing ID
