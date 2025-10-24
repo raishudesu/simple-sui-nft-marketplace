@@ -5,12 +5,14 @@ A complete NFT marketplace smart contract built with Move for the Sui blockchain
 ## 🚀 Features
 
 ### Core NFT Functions
+
 - **Mint NFTs** - Create unique NFTs with name, description, and image URL
 - **Update Description** - Modify NFT descriptions after minting
 - **Burn NFTs** - Permanently delete NFTs from the blockchain
 - **Transfer NFTs** - Send NFTs to other addresses
 
 ### Marketplace Functions
+
 - **List NFTs** - Put your NFTs up for sale at a specified price
 - **Buy NFTs** - Purchase listed NFTs with SUI tokens
 - **Cancel Listings** - Remove your NFTs from the marketplace
@@ -18,6 +20,7 @@ A complete NFT marketplace smart contract built with Move for the Sui blockchain
 - **Fee Withdrawal** - Admin function to withdraw collected fees
 
 ### Developer Features
+
 - **Entry Functions** - Easy interaction from wallets and IDEs
 - **Public Functions** - Composable functions for Programmable Transaction Blocks (PTBs)
 - **Getter Functions** - Read NFT and listing data on-chain
@@ -33,22 +36,26 @@ A complete NFT marketplace smart contract built with Move for the Sui blockchain
 ## 🛠️ Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/tzarumang/simple_nft_marketplace.git
 cd simple_nft-marketplace
 ```
 
 2. Build the project:
+
 ```bash
 sui move build
 ```
 
 3. Run tests:
+
 ```bash
 sui move test
 ```
 
 4. Publish to Sui testnet:
+
 ```bash
 sui client publish --gas-budget 100000000
 ```
@@ -58,6 +65,7 @@ sui client publish --gas-budget 100000000
 ### Minting an NFT
 
 **From CLI:**
+
 ```bash
 sui client call \
   --package <PACKAGE_ID> \
@@ -68,6 +76,7 @@ sui client call \
 ```
 
 **From TypeScript SDK:**
+
 ```typescript
 const tx = new Transaction();
 tx.moveCall({
@@ -90,7 +99,8 @@ sui client call \
   --args <NFT_OBJECT_ID> 1000000000 \
   --gas-budget 10000000
 ```
-*Note: Price is in MIST (1 SUI = 1,000,000,000 MIST)*
+
+_Note: Price is in MIST (1 SUI = 1,000,000,000 MIST)_
 
 ### Buying an NFT
 
@@ -119,6 +129,7 @@ sui client call \
 ### Structs
 
 #### `DevNetNFT`
+
 ```move
 public struct DevNetNFT has key, store {
     id: UID,
@@ -129,6 +140,7 @@ public struct DevNetNFT has key, store {
 ```
 
 #### `Listing`
+
 ```move
 public struct Listing has key {
     id: UID,
@@ -139,6 +151,7 @@ public struct Listing has key {
 ```
 
 #### `Marketplace`
+
 ```move
 public struct Marketplace has key {
     id: UID,
@@ -155,44 +168,45 @@ public struct Marketplace has key {
 
 ### Entry Functions (For External Calls)
 
-| Function | Description |
-|----------|-------------|
-| `mint_to_sender` | Mint and transfer NFT to sender |
-| `update_nft_description` | Update NFT description |
-| `burn_nft` | Permanently delete an NFT |
-| `list_nft_for_sale` | List NFT on marketplace |
-| `buy_nft` | Purchase a listed NFT |
-| `cancel_listing` | Cancel/delist an NFT |
+| Function                    | Description                     |
+| --------------------------- | ------------------------------- |
+| `mint_to_sender`            | Mint and transfer NFT to sender |
+| `update_nft_description`    | Update NFT description          |
+| `burn_nft`                  | Permanently delete an NFT       |
+| `list_nft_for_sale`         | List NFT on marketplace         |
+| `buy_nft`                   | Purchase a listed NFT           |
+| `cancel_listing`            | Cancel/delist an NFT            |
 | `withdraw_marketplace_fees` | Withdraw collected fees (admin) |
 
 ### Public Functions (For Composability)
 
-| Function | Description |
-|----------|-------------|
-| `mint` | Create and return NFT |
-| `update_description` | Update NFT description |
-| `burn` | Delete an NFT |
-| `list_nft` | List NFT for sale |
-| `purchase_nft` | Buy NFT (returns excess payment) |
-| `delist_nft` | Cancel listing |
+| Function             | Description                      |
+| -------------------- | -------------------------------- |
+| `mint`               | Create and return NFT            |
+| `update_description` | Update NFT description           |
+| `burn`               | Delete an NFT                    |
+| `list_nft`           | List NFT for sale                |
+| `buy_nft`            | Buy NFT (returns excess payment) |
+| `delist_nft`         | Cancel listing                   |
 
 ### Getter Functions (View Functions)
 
-| Function | Description |
-|----------|-------------|
-| `name` | Get NFT name |
-| `description` | Get NFT description |
-| `url` | Get NFT image URL |
-| `nft_id` | Get NFT object ID |
-| `listing_price` | Get listing price |
-| `listing_seller` | Get seller address |
-| `listing_nft_id` | Get NFT ID from listing |
-| `listing_id` | Get listing object ID |
+| Function              | Description                 |
+| --------------------- | --------------------------- |
+| `name`                | Get NFT name                |
+| `description`         | Get NFT description         |
+| `url`                 | Get NFT image URL           |
+| `nft_id`              | Get NFT object ID           |
+| `listing_price`       | Get listing price           |
+| `listing_seller`      | Get seller address          |
+| `listing_nft_id`      | Get NFT ID from listing     |
+| `listing_id`          | Get listing object ID       |
 | `marketplace_balance` | Get marketplace fee balance |
 
 ## 💰 Fee Structure
 
 The marketplace automatically collects a **2% fee** on all NFT sales:
+
 - **98%** goes to the seller
 - **2%** goes to the marketplace balance
 
@@ -201,11 +215,13 @@ Fees can be withdrawn by calling `withdraw_marketplace_fees`.
 ## 🧪 Testing
 
 Run the test suite:
+
 ```bash
 sui move test
 ```
 
 ### Test Coverage
+
 - ✅ NFT minting and transfers
 - ✅ Description updates
 - ✅ NFT burning
@@ -215,19 +231,23 @@ sui move test
 ## 📝 Example Workflow
 
 1. **Alice mints an NFT**
+
    ```bash
    mint_to_sender("Cool Art", "My artwork", "https://ipfs.io/...")
    ```
 
 2. **Alice lists the NFT for 5 SUI**
+
    ```bash
    list_nft_for_sale(nft_id, 5000000000)
    ```
 
 3. **Bob buys the NFT**
+
    ```bash
    buy_nft(listing_id, payment_coin, marketplace)
    ```
+
    - Bob pays 5 SUI
    - Alice receives 4.9 SUI (98%)
    - Marketplace receives 0.1 SUI (2%)
@@ -262,6 +282,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 Apache-2.0 License
 
 ## 👥 Authors
+
 @tzarumang
 
 Created for Move In Campus Activity
